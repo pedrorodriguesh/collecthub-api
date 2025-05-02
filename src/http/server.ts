@@ -1,7 +1,7 @@
 import { swagger } from '@elysiajs/swagger';
-import { Elysia, t } from 'elysia';
-import { db } from '..';
-import { users } from '../db/schema';
+import { Elysia } from 'elysia';
+import { createUser } from './routes/create-user';
+import { sendAuthlink } from './routes/send-auth-link';
 
 const app = new Elysia()
 	.use(
@@ -9,41 +9,15 @@ const app = new Elysia()
 			documentation: {
 				info: {
 					title: 'CollectHub API',
-					description: 'API for CollectHub',
 					version: '1.0.0',
+					description: 'API for CollectHub',
 				},
 			},
 		}),
 	)
-	.post(
-		'/users',
-		async ({ body, set }) => {
-			const { name, email } = body;
-
-			const [user] = await db
-				.insert(users)
-				.values({
-					name,
-					email,
-				})
-				.returning({
-					id: users.id,
-				});
-
-			set.status = 204;
-
-			return {
-				user,
-			};
-		},
-		{
-			body: t.Object({
-				name: t.String(),
-				email: t.String(),
-			}),
-		},
-	);
+	.use(createUser)
+	.use(sendAuthlink);
 
 app.listen(3333, () => {
-	console.log('👨🏻‍💻 Server is running');
+	console.log('👨🏻‍💻 Server is running - http://localhost:3333/swagger');
 });
