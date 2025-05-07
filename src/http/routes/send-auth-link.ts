@@ -26,8 +26,6 @@ export const sendAuthlink = new Elysia().post(
 			code: authLinkCode,
 		});
 
-		// send email
-
 		const authLink = new URL('/auth-links/authenticate', env.API_BASE_URL);
 		authLink.searchParams.set('code', authLinkCode);
 		authLink.searchParams.set('redirect', env.AUTH_REDIRECT_URL);
